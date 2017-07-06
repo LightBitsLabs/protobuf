@@ -1,0 +1,18 @@
+PRODUCT_BASE_NAME := `basename $(CURDIR)`
+MY_COMPONENT_PATH := $(shell component-tool localpath --repo=$(PRODUCT_BASE_NAME) --type=$(BUILD_TYPE) $(PRODUCT_BASE_NAME))
+PRODUCT_INSTALL_DIR := build
+
+all: build
+
+build:
+	mkdir -p $(PRODUCT_INSTALL_DIR)
+	sudo ./autogen.sh && sudo make clean && sudo ./configure --prefix=`pwd`/$(PRODUCT_INSTALL_DIR) && sudo make -j4 && sudo make install
+
+install: 
+	mkdir -p $(MY_COMPONENT_PATH)
+	cp -r $(PRODUCT_INSTALL_DIR)/* $(MY_COMPONENT_PATH)
+
+checkin:
+	component-tool checkin --repo=$(PRODUCT_BASE_NAME) --type=$(BUILD_TYPE) $(PRODUCT_BASE_NAME)
+
+.PHONY: build install checkin
